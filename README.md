@@ -22,22 +22,22 @@ import (
 
 func main(){
 
-# Read from filesystem
+// Read from filesystem
 results, _ := richdiff.RichFileExtraction("sample.exe")
 
-# richdiff.RichExtraction() alternatively uses []byte as an input
+// richdiff.RichExtraction() alternatively uses []byte as an input
 
-# Sorts the results by product ID
+// Sorts the results by product ID
 results.Sort()
 
-# Saves json to file
+// Saves json to file
 results.WriteToFile("sample.json")
 
-# Prints json to the console
+// Prints json to the console
 fmt.Println(results.String())
 
 
-# prints the results in a table
+// prints the results in a table
 results.RichTable()
 
 }
