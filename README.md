@@ -5,9 +5,13 @@
 Performs easy to use operations on PE Rich Signatures. Supports outputing the signature in a human readable table, as 
 as a JSON object (with the option to save it to a file).
 
+Example image output:
+
+<img src="resources/img.png" alt="Example image output" width="100" height="100">
+
+
 TODO: 
  - Add built in support for diffing two or more signatures
- - Ability to render rich signature as a picture for visual comparisons
 
 Example usage:
 
