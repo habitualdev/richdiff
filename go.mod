@@ -1,4 +1,4 @@
-module RichDiff
+module richdiff
 
 go 1.18
 

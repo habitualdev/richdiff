@@ -3,7 +3,9 @@ package richdiff
 import (
 	"encoding/binary"
 	"errors"
+	"image"
 	"io/ioutil"
+	"math"
 	"strconv"
 )
 
@@ -58,4 +60,39 @@ func RichFileExtraction(filename string) (Results, error) {
 	}
 	return RichExtraction(fileBuffer)
 }
+
+func RichToImg(fileBuffer []byte) (image.Image, error) {
+	for i := 1; i <= 200; i++ {
+		dwordBuffer := fileBuffer[(0x80 + (i)*4) : 0x80+(i)*4+4]
+		if string(dwordBuffer) == "Rich" {
+			xorKeyOffset = int64(0x80 + ((i + 1) * 4))
+			richSize := 0x80 + (i * 4) - 0x80
+			tempBuffer := fileBuffer[0x80 : 0x80+richSize]
+			richBuffer = tempBuffer
+			break
+		}
+	}
+		byteSize := len(richBuffer)
+		sideLength := math.Sqrt(float64(byteSize))
+		imageSideLength := int(math.Ceil(sideLength))
+		sizeDiff := (imageSideLength * imageSideLength) - byteSize
+		if sizeDiff > 0 {
+			richBuffer = append(richBuffer, make([]byte, sizeDiff)...)
+		}
+		img := image.NewRGBA(image.Rect(0, 0, imageSideLength, imageSideLength))
+		for i := 0; i < byteSize; i++ {
+			img.Pix[i] = richBuffer[i]
+		}
+	return img, nil
+	}
+	func RichFileToImg(filename string) (image.Image, error) {
+		fileBuffer, err := ioutil.ReadFile(filename)
+		if err != nil {
+			return nil, err
+		}
+		return RichToImg(fileBuffer)
+	}
+
+
+
 
