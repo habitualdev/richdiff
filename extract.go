@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"image"
+	"image/color"
 	"io/ioutil"
 	"math"
 	"strconv"
@@ -72,19 +73,38 @@ func RichToImg(fileBuffer []byte) (image.Image, error) {
 			break
 		}
 	}
-		byteSize := len(richBuffer)
-		sideLength := math.Sqrt(float64(byteSize))
-		imageSideLength := int(math.Ceil(sideLength))
-		sizeDiff := (imageSideLength * imageSideLength) - byteSize
-		if sizeDiff > 0 {
-			richBuffer = append(richBuffer, make([]byte, sizeDiff)...)
-		}
-		img := image.NewRGBA(image.Rect(0, 0, imageSideLength, imageSideLength))
-		for i := 0; i < byteSize; i++ {
-			img.Pix[i] = richBuffer[i]
-		}
-	return img, nil
+	if len(richBuffer) == 0 {
+		return nil, errors.New("Rich Header not found")
 	}
+
+	xorBuffer := fileBuffer[xorKeyOffset : xorKeyOffset+4]
+	xordBytes := make([]byte, len(richBuffer))
+	for i, v := range richBuffer {
+		xordBytes[i] = v ^ xorBuffer[i%4]
+	}
+
+	byteSize := len(xordBytes)
+	sideLength := math.Sqrt(float64(byteSize))
+	imageSideLength := int(math.Ceil(sideLength))
+	sizeDiff := (imageSideLength * imageSideLength) - byteSize
+	if sizeDiff > 0 {
+		xordBytes = append(xordBytes, make([]byte, sizeDiff)...)
+	}
+	img := image.NewRGBA(image.Rect(0, 0, imageSideLength, imageSideLength))
+
+	for i := 0; i < imageSideLength; i++ {
+		for j := 0; j < imageSideLength; j++ {
+			img.Set(i, j, color.RGBA{
+				uint8(xordBytes[j*imageSideLength+i]),
+				uint8(255 - xordBytes[j*imageSideLength+i]),
+				uint8(255 - xordBytes[j*imageSideLength+i]),
+				uint8(xordBytes[j*imageSideLength+i]),
+			})
+		}
+	}
+
+	return img, nil
+}
 
 	func RichFileToImg(filename string) (image.Image, error) {
 		fileBuffer, err := ioutil.ReadFile(filename)
