@@ -10,9 +10,6 @@ Example image output:
 <img src="resources/img.png" alt="Example image output" width="100" height="100">
 
 
-TODO: 
- - Add built in support for diffing two or more signatures
-
 Example usage:
 
 
@@ -27,7 +24,7 @@ import (
 func main(){
 
 // Read from filesystem
-results, _ := richdiff.RichFileExtraction("sample.exe")
+results, err := richdiff.RichFileExtraction("sample.exe")
 
 // richdiff.RichExtraction() alternatively uses []byte as an input
 
@@ -40,9 +37,16 @@ results.WriteToFile("sample.json")
 // Prints json to the console
 fmt.Println(results.String())
 
-
 // prints the results in a table
 results.RichTable()
+
+// create a png from the DECRYPTED rich signature
+img, err := richdiff.RichFileToImage("sample.exe")
+
+// Diff the results with another richdiff results object
+changelog, numberOfDiffs, err := results.Diff(richdiff.RichResults{})
+
+fmt.Println(err.Error())
 
 }
 ```

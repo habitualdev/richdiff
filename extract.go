@@ -106,12 +106,12 @@ func RichToImg(fileBuffer []byte) (image.Image, error) {
 	return img, nil
 }
 
-	func RichFileToImg(filename string) (image.Image, error) {
-		fileBuffer, err := ioutil.ReadFile(filename)
-		if err != nil {
+func RichFileToImg(filename string) (image.Image, error) {
+	fileBuffer, err := ioutil.ReadFile(filename)
+	if err != nil {
 			return nil, err
 		}
-		return RichToImg(fileBuffer)
+	return RichToImg(fileBuffer)
 	}
 
 
