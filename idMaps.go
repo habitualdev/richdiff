@@ -1,13 +1,5 @@
 package richdiff
 
-import (
-	"encoding/json"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"os"
-	"github.com/r3labs/diff/v3"
-)
-
-
 type entry map[int]string
 
 var prodList = make(entry)
@@ -317,53 +309,7 @@ func vs_version(i int) (string, string) {
 
 }
 
-type Result struct {
-	CompilerPatchLevel  int `diff:"compilerPatchLevel"`
-	ProductID           int `diff:"productID"`
-	Count               int `diff:"count"`
-	MSInternalName      string `diff:"msInternalName"`
-	VisualStudioRelease string `diff:"visualStudioRelease"`
+func dsc(x,y,z int) int {
+	return (2*z)/(x+y)
 }
-
-type Results []Result
-
-func (r Results) RichTable(){
-	t := table.NewWriter()
-	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Compiler Patch Level", "Product ID", "Count", "MS Internal Name", "Visual Studio Release"})
-	for _, v := range r {
-		t.AppendRow([]interface{}{v.CompilerPatchLevel, v.ProductID, v.Count, v.MSInternalName, v.VisualStudioRelease})
-	}
-	t.Render()
-}
-
-func (r Results) Sort(){
-	for i := 0; i < len(r); i++ {
-		for j := i + 1; j < len(r); j++ {
-			if r[i].ProductID > r[j].ProductID {
-				r[i], r[j] = r[j], r[i]
-			}
-		}
-	}
-}
-
-func (r Results) String() string {
-	jsonBytes, _ := json.Marshal(r)
-	return string(jsonBytes)
-}
-
-func (r Results) WriteToFile(filename string) {
-	file, _ := os.Create(filename)
-	defer file.Close()
-	json.NewEncoder(file).Encode(r)
-}
-
-func (r Results) DiffResults(or Results) ([]diff.Change, int, error) {
-	changelog, err := diff.Diff(r, or)
-	if err != nil {
-		return nil, -1, err
-	}
-	return changelog, len(changelog), nil
-}
-
 

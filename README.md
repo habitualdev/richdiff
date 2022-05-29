@@ -23,7 +23,7 @@ import (
 
 func main(){
 
-// Read from filesystem
+// Read from filesystem. Does rich sig extraction, parsing, and byte image creation
 results, err := richdiff.RichFileExtraction("sample.exe")
 
 // richdiff.RichExtraction() alternatively uses []byte as an input
@@ -40,10 +40,7 @@ fmt.Println(results.String())
 // prints the results in a table
 results.RichTable()
 
-// create a png from the DECRYPTED rich signature
-img, err := richdiff.RichFileToImage("sample.exe")
-
-// Diff the results with another richdiff results object
+// Diff the results with another richdiff results object, returns percentage of similarity
 changelog, numberOfDiffs, err := results.Diff(richdiff.RichResults{})
 
 fmt.Println(err.Error())
