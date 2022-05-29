@@ -92,7 +92,6 @@ func (r Results) DiffResults(or Results) ([]diff.Change, int, error) {
 
 }
 
-
 func RichExtraction(fileBuffer []byte) (Results, error) {
 	for i := 1; i <= 200; i++ {
 		dwordBuffer := fileBuffer[(0x80+(i)*4) : 0x80+(i)*4+4]
