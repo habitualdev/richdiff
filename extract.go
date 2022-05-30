@@ -93,6 +93,7 @@ func (r Results) DiffResults(or Results) ([]diff.Change, int, error) {
 }
 
 func RichExtraction(fileBuffer []byte) (Results, error) {
+	var err error
 	for i := 1; i <= 200; i++ {
 		dwordBuffer := fileBuffer[(0x80+(i)*4) : 0x80+(i)*4+4]
 		if string(dwordBuffer) == "Rich" {
@@ -130,11 +131,10 @@ func RichExtraction(fileBuffer []byte) (Results, error) {
 		})
 	}
 	r := Results{Results: jsonResults, DecryptedRich: xordBytes}
-	err := richToImg(r)
+	r.ByteImage, err = richToImg(r)
 	if err != nil {
 		return r, err
 	}
-
 	return r, nil
 }
 
@@ -146,7 +146,7 @@ func RichFileExtraction(filename string) (Results, error) {
 	return RichExtraction(fileBuffer)
 }
 
-func richToImg(r Results) error {
+func richToImg(r Results) (image.Image, error) {
 	xordBytes := r.DecryptedRich
 	byteSize := len(xordBytes)
 	sideLength := math.Sqrt(float64(byteSize))
@@ -167,8 +167,7 @@ func richToImg(r Results) error {
 			})
 		}
 	}
-	r.ByteImage = img
-	return nil
+	return img,nil
 }
 
 
