@@ -1,4 +1,4 @@
-module github.com/roaldi/richdiff
+module github.com/habitualdev/richdiff
 
 go 1.18
 
